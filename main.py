@@ -69,13 +69,42 @@ def standardize_func(val):
     return val[0], val[1], (val[2] - avg_val[val[0]]) / standard_dev[i]
 
 
+def most_var_func(ans, cur):
+    global i, flag, rows
+
+    if i < 499:
+        i += 1
+        if flag:
+            flag = False
+            ans = [ans, cur]
+            return ans
+        else:
+            ans.append(cur)
+            return ans
+    else:
+        return ans
+
+
+def filter_func(ans, cur):
+    global most_var, flag, arg
+
+    if flag:
+        flag = False
+        if ans[1] in arg:
+            ans = [ans]
+        else:
+            ans = []
+
+    if cur[1] in arg:
+        ans.append(cur)
+
+    return ans
 # def twopointone:
 
 #    for j in
 
 
 rows, cols, data = read_table()
-print(rows, cols)
 avg_val = {}
 var_val = {}
 cnt = 1
@@ -119,13 +148,20 @@ centered_val_by_gene = list(map(lambda a: (a[0], a[1], a[2] - avg_val[a[1]]), da
 
 reduce(var_func, centered_val_by_gene)
 
-for k, v in var_val.items():
-    print(k, v)
+avg_val_by_gene = avg_val
+var_val_by_gene = var_val
+avg_val = temp_avg
+var_val = temp_var
 
-# avg_val_by_gene = avg_val
-# var_val_by_gene = var_val
-# avg_val = temp_avg
-# var_val = temp_var
-# rows = temp
+flag = True
+i = 0
+
+most_var = reduce(most_var_func, sorted(var_val_by_gene.items(), key=lambda x: x[1], reverse=True))
+
+flag = True
+arg = list(zip(*most_var))[0]
+filtered = reduce(filter_func, standardized_val)
+
+filt_sorted = sorted(sorted(filtered, key=lambda x: x[2], reverse=True), key=lambda x: x[1])
 
 
